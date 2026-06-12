@@ -26,7 +26,7 @@ const analyzeFeedback = async (feedbackText) => {
   }
 
   try {
-    const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
+    const model = genAI.getGenerativeModel({ model: 'gemini-pro' });
 
     const prompt = `
 Analyze the customer feedback below.
