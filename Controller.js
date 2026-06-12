@@ -20,9 +20,26 @@ if (GEMINI_API_KEY && GEMINI_API_KEY.startsWith("AIza")) {
 }
 
 const analyzeFeedback = async (feedbackText) => {
-  // If the SDK wasn't initialized, skip calling the API and return a neutral analysis
+  // Keyword-based fallback analysis
+  const getFallbackAnalysis = (text) => {
+    const lowerText = text.toLowerCase();
+    const positiveWords = ["great", "awesome", "excellent", "good", "love", "amazing", "best", "thanks", "helpful", "happy", "perfect"];
+    const negativeWords = ["bad", "terrible", "worst", "hate", "awful", "poor", "slow", "broken", "issue", "error", "sucks", "disappointed", "fail", "wrong"];
+    
+    let posCount = 0;
+    let negCount = 0;
+    
+    positiveWords.forEach(word => { if (lowerText.includes(word)) posCount++; });
+    negativeWords.forEach(word => { if (lowerText.includes(word)) negCount++; });
+
+    if (posCount > negCount) return { sentiment: "Positive", priorityScore: 2 };
+    if (negCount > posCount) return { sentiment: "Negative", priorityScore: 5 };
+    return { sentiment: "Neutral", priorityScore: 3 };
+  };
+
+  // If the SDK wasn't initialized, use keyword fallback
   if (!genAI) {
-    return { sentiment: 'Neutral', priorityScore: 3 }
+    return getFallbackAnalysis(feedbackText);
   }
 
   try {
@@ -60,11 +77,8 @@ Feedback:
     return JSON.parse(cleanedResponse);
   } catch (error) {
     console.error("Gemini Error:", error);
-
-    return {
-      sentiment: "Neutral",
-      priorityScore: 3,
-    };
+    // Use keyword fallback if Gemini fails
+    return getFallbackAnalysis(feedbackText);
   }
 };
 
