@@ -6,7 +6,7 @@ const _rawKey = process.env.GEMINI_API_KEY || '';
 const GEMINI_API_KEY = typeof _rawKey === 'string' ? _rawKey.trim() : '';
 
 let genAI = null;
-if (GEMINI_API_KEY) {
+if (GEMINI_API_KEY && GEMINI_API_KEY.startsWith("AIza")) {
   try {
     genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
     const masked = GEMINI_API_KEY.slice(-4).padStart(GEMINI_API_KEY.length, '*');
@@ -16,7 +16,7 @@ if (GEMINI_API_KEY) {
     genAI = null;
   }
 } else {
-  console.warn('GEMINI_API_KEY is not set — AI analysis will be skipped (neutral defaults).');
+  console.warn('Valid GEMINI_API_KEY (starting with AIza) is not set — AI analysis will be skipped (neutral defaults).');
 }
 
 const analyzeFeedback = async (feedbackText) => {
